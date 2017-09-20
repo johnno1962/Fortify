@@ -58,6 +58,22 @@ open class Fortify: ThreadLocal {
         return getThreadLocal(ofClass: Fortify.self, keyVar: &pthreadKey)
     }
 
+    open class func disableExclusivityChecking() {
+        // Required as Swift assumes it has complete control of the stack
+        #if os(Android)
+        let libName = "libswiftCore.so"
+        #else
+        let libName: String? = nil
+        #endif
+        if let stdlibHandle = dlopen(libName, Int32(RTLD_LAZY | RTLD_NOLOAD)),
+            let disableExclusivity = dlsym(stdlibHandle, "_swift_disableExclusivityChecking") {
+            disableExclusivity.assumingMemoryBound(to: Bool.self).pointee = true
+        }
+        else {
+            NSLog("Could not disable exclusivity, failure likely...")
+        }
+    }
+
     open class func exec<T>( block: () throws -> T ) throws -> T {
         if _swift_stdlib_errorHandler == nil {
             _swift_stdlib_errorHandler = {
@@ -66,19 +82,7 @@ open class Fortify: ThreadLocal {
                 escape(msg: msg, file: file, line: line)
             }
 
-            // Required as Swift assumes it has complete control of the stack
-            #if os(Android)
-            let libName = "libswiftCore.so"
-            #else
-            let libName: String? = nil
-            #endif
-            if let stdlibHandle = dlopen(libName, Int32(RTLD_LAZY | RTLD_NOLOAD)),
-                let disableExclusivity = dlsym(stdlibHandle, "_swift_disableExclusivityChecking") {
-                disableExclusivity.assumingMemoryBound(to: Bool.self).pointee = true
-            }
-            else {
-                NSLog("Could not disable exclusivity, failure likely...")
-            }
+            disableExclusivityChecking()
         }
 
         let local = threadLocal
