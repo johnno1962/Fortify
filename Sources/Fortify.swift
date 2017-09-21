@@ -14,28 +14,33 @@ import Foundation
 open class ThreadLocal {
     public required init() {
     }
-}
 
-public func getThreadLocal<T: ThreadLocal>(ofClass: T.Type, keyVar: UnsafeMutablePointer<pthread_key_t>) -> T {
-    let needsKey = keyVar.pointee == 0
-    if needsKey && pthread_key_create(keyVar, {
-        #if os(Linux)
-        Unmanaged<ThreadLocal>.fromOpaque($0!).release()
-        #else
-        Unmanaged<ThreadLocal>.fromOpaque($0).release()
-        #endif
-    }) != 0 {
-        NSLog("Could not pthread_key_create: %s", strerror(errno))
-    }
-    if let existing = pthread_getspecific(keyVar.pointee) {
-        return Unmanaged<T>.fromOpaque(existing).takeUnretainedValue()
-    }
-    else {
-        let unmanaged = Unmanaged.passRetained(T())
-        if pthread_setspecific(keyVar.pointee, unmanaged.toOpaque()) != 0 {
-            NSLog("Could not pthread_setspecific: %s", strerror(errno))
+    public class func getThreadLocal<T: ThreadLocal>(ofClass: T.Type,
+                         keyVar: UnsafeMutablePointer<pthread_key_t>) -> T {
+        let needsKey = keyVar.pointee == 0
+        if needsKey {
+            let ret = pthread_key_create(keyVar, {
+                #if os(Linux)
+                Unmanaged<ThreadLocal>.fromOpaque($0!).release()
+                #else
+                Unmanaged<ThreadLocal>.fromOpaque($0).release()
+                #endif
+            })
+            if ret != 0 {
+                NSLog("Could not pthread_key_create: %s", strerror(ret))
+            }
         }
-        return unmanaged.takeUnretainedValue()
+        if let existing = pthread_getspecific(keyVar.pointee) {
+            return Unmanaged<T>.fromOpaque(existing).takeUnretainedValue()
+        }
+        else {
+            let unmanaged = Unmanaged.passRetained(T())
+            let ret = pthread_setspecific(keyVar.pointee, unmanaged.toOpaque())
+            if ret != 0 {
+                NSLog("Could not pthread_setspecific: %s", strerror(ret))
+            }
+            return unmanaged.takeUnretainedValue()
+        }
     }
 }
 
@@ -43,23 +48,23 @@ public func getThreadLocal<T: ThreadLocal>(ofClass: T.Type, keyVar: UnsafeMutabl
 public func setjump(_: UnsafeMutablePointer<jmp_buf>!) -> Int32
 
 @_silgen_name ("longjmp")
-public func longjump(_: UnsafeMutablePointer<jmp_buf>!, _: Int32)
+public func longjump(_: UnsafeMutablePointer<jmp_buf>!, _: Int32) -> Never
 
-private var empty_buf = [UInt8](repeating: 0, count: MemoryLayout<jmp_buf>.size)
+private let empty_buf = [UInt8](repeating: 0, count: MemoryLayout<jmp_buf>.size)
 
 open class Fortify: ThreadLocal {
 
-    static var pthreadKey: pthread_key_t = 0
-
-    var stack = [jmp_buf]()
-    var error: Error?
+    static private var pthreadKey: pthread_key_t = 0
 
     open class var threadLocal: Fortify {
         return getThreadLocal(ofClass: Fortify.self, keyVar: &pthreadKey)
     }
 
+    private var stack = [jmp_buf]()
+    public var error: Error?
+
+    // Required as Swift assumes it has control of the stack
     open class func disableExclusivityChecking() {
-        // Required as Swift assumes it has complete control of the stack
         #if os(Android)
         let libName = "libswiftCore.so"
         #else
@@ -74,21 +79,23 @@ open class Fortify: ThreadLocal {
         }
     }
 
-    open class func exec<T>( block: () throws -> T ) throws -> T {
-        if _swift_stdlib_errorHandler == nil {
-            _swift_stdlib_errorHandler = {
-                (prefix: StaticString, msg: String, file: StaticString,
-                                line: UInt, flags: UInt32, config: Int32) in
-                escape(msg: msg, file: file, line: line)
-            }
-
-            disableExclusivityChecking()
+    public static let installHandlerOnce: Void = {
+        _swift_stdlib_errorHandler = {
+            (prefix: StaticString, msg: String, file: StaticString,
+            line: UInt, flags: UInt32, config: Int32) in
+            escape(msg: msg, file: file, line: line)
         }
 
+        disableExclusivityChecking()
+    }()
+
+    open class func exec<T>( block: () throws -> T ) throws -> T {
+        _ = installHandlerOnce
         let local = threadLocal
 
-        empty_buf.withUnsafeMutableBytes {
-            local.stack.append($0.baseAddress!.assumingMemoryBound(to: jmp_buf.self).pointee)
+        empty_buf.withUnsafeBytes {
+            let buf_ptr = $0.baseAddress!.assumingMemoryBound(to: jmp_buf.self)
+            local.stack.append(buf_ptr.pointee)
         }
 
         defer {
@@ -102,27 +109,25 @@ open class Fortify: ThreadLocal {
         return try block()
     }
 
-    open class func escape(msg: String, file: StaticString = #file, line: UInt = #line) {
+    open class func escape(msg: String, file: StaticString = #file, line: UInt = #line) -> Never {
         escape(withError: NSError(domain: msg, code: -1, userInfo: [
             NSLocalizedDescriptionKey: "\(msg): \(file):\(line)",
             "msg": msg, "file": file, "line": line
         ]))
     }
 
-    open class func escape(withError error: Error) {
+    open class func escape(withError error: Error) -> Never {
         let local = threadLocal
-        if local.stack.count > 0 {
-            local.error = error
-            longjump(&local.stack[local.stack.count-1], 1)
-            NSLog("longjmp() failed, should not get here")
-        }
-        else {
+        local.error = error
+
+        if local.stack.count == 0 {
             NSLog("escape without matching exec call: \(error)")
             #if !os(Linux)
-            // this never seems to be implemented
+            // pthread_exit(nil) just crashes
             var oldState: Int32 = 0
             pthread_setcancelstate(Int32(PTHREAD_CANCEL_ENABLE), &oldState)
             pthread_setcanceltype(Int32(PTHREAD_CANCEL_DEFERRED), &oldState)
+            // pthread_cancel() never seems to be implemented
             let cancelled = pthread_cancel(pthread_self())
             if cancelled != 0 {
                 NSLog("pthread_cancel() failed: %s", strerror(cancelled))
@@ -132,5 +137,8 @@ open class Fortify: ThreadLocal {
             NSLog("cancel/exit not available/implemented or crashes, parking thread")
             Thread.sleep(until: Date.distantFuture)
         }
+
+        longjump(&local.stack[local.stack.count-1], 1)
+        NSLog("longjmp() failed, should not get here")
     }
 }
