@@ -5,9 +5,6 @@
 //  Created by John Holdsworth on 19/09/2017.
 //  Copyright © 2017 John Holdsworth. All rights reserved.
 //
-//  Currently requires patched Swift toolchain from here:
-//  http://johnholdsworth.com/swift-LOCAL-2017-09-20-a-osx.tar.gz
-//
 
 import Foundation
 
@@ -20,7 +17,7 @@ open class ThreadLocal {
         let needsKey = keyVar.pointee == 0
         if needsKey {
             let ret = pthread_key_create(keyVar, {
-                #if os(Linux)
+                #if os(Linux) || os(Android)
                 Unmanaged<ThreadLocal>.fromOpaque($0!).release()
                 #else
                 Unmanaged<ThreadLocal>.fromOpaque($0).release()
@@ -80,11 +77,12 @@ open class Fortify: ThreadLocal {
     }
 
     public static let installHandlerOnce: Void = {
-        _swift_stdlib_errorHandler = {
-            (prefix: StaticString, msg: String, file: StaticString,
-            line: UInt, flags: UInt32, config: Int32) in
-            escape(msg: msg, file: file, line: line)
-        }
+        _ = signal(SIGILL, { (signo: Int32) in
+            Fortify.escape(msg: "Signal \(signo)")
+        })
+        _ = signal(SIGABRT, { (signo: Int32) in
+            Fortify.escape(msg: "Signal \(signo)")
+        })
 
         disableExclusivityChecking()
     }()
@@ -102,7 +100,8 @@ open class Fortify: ThreadLocal {
             local.stack.removeLast()
         }
 
-        if setjump(&local.stack[local.stack.count-1]) != 0 {
+        let stack = local.stack.withUnsafeMutableBufferPointer { $0.baseAddress }
+        if setjump(stack! + (local.stack.count-1)) != 0 {
             throw local.error ?? NSError(domain: "Error not available", code: -1, userInfo: nil)
         }
 
@@ -122,7 +121,7 @@ open class Fortify: ThreadLocal {
 
         if local.stack.count == 0 {
             NSLog("escape without matching exec call: \(error)")
-            #if !os(Linux)
+            #if !os(Android)
             // pthread_exit(nil) just crashes
             var oldState: Int32 = 0
             pthread_setcancelstate(Int32(PTHREAD_CANCEL_ENABLE), &oldState)
@@ -138,7 +137,8 @@ open class Fortify: ThreadLocal {
             Thread.sleep(until: Date.distantFuture)
         }
 
-        longjump(&local.stack[local.stack.count-1], 1)
+        let stack = local.stack.withUnsafeMutableBufferPointer { $0.baseAddress }
+        longjump(stack! + (local.stack.count-1), 1)
         NSLog("longjmp() failed, should not get here")
     }
 }
