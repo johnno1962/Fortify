@@ -15,11 +15,12 @@ let package = Package(
             targets: [name]),
     ],
     dependencies: [
+        .package(url: "https://github.com/johnno1962/StringIndex", .upToNextMajor(from: "1.3.1")),
     ],
     targets: [
         .target(
             name: name,
-            dependencies: [],
+            dependencies: ["StringIndex"],
             path: "Sources/")
     ]
 )

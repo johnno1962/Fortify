@@ -5,8 +5,11 @@
 //  Created by John Holdsworth on 19/09/2017.
 //  Copyright © 2017 John Holdsworth. All rights reserved.
 //
+//  $Id: //depot/Fortify/Sources/Fortify.swift#8 $
+//
 
 import Foundation
+import StringIndex
 
 open class ThreadLocal {
     public required init() {
@@ -109,8 +112,10 @@ open class Fortify: ThreadLocal {
     }
 
     open class func escape(msg: String, file: StaticString = #file, line: UInt = #line) -> Never {
-        escape(withError: NSError(domain: msg, code: -1, userInfo: [
-            NSLocalizedDescriptionKey: "\(msg): \(file):\(line)",
+        let trace = "Program has trapped: \(msg), stack trace follows:\n\(stackTrace())"
+        NSLog(trace)
+        escape(withError: NSError(domain: "Fortify", code: -1, userInfo: [
+            NSLocalizedDescriptionKey: trace,
             "msg": msg, "file": file, "line": line
         ]))
     }
@@ -141,4 +146,41 @@ open class Fortify: ThreadLocal {
         longjump(stack! + (local.stack.count-1), 1)
         NSLog("longjmp() failed, should not get here")
     }
+
+    public class func stackTrace() -> String {
+        var trace = ""
+        for var caller in Thread.callStackSymbols {
+            if let offsetStart = caller.lastIndex(of: " "),
+                let symEnd = (offsetStart-2).index(in: caller),
+                let symStart = caller[..<symEnd].lastIndex(of: " "),
+                let demangled = demangle(symbol: caller[symStart+1 ..< symEnd]) {
+                caller[symStart+1 ..< symEnd] = demangled
+            }
+
+            trace += caller+"\n"
+        }
+        return trace
+    }
+
+    class func demangle(symbol: UnsafePointer<Int8>) -> String? {
+        if let demangledNamePtr = _stdlib_demangleImpl(
+            symbol, mangledNameLength: UInt(strlen(symbol)),
+            outputBuffer: nil, outputBufferSize: nil, flags: 0) {
+            let demangledName = String(cString: demangledNamePtr)
+            free(demangledNamePtr)
+            return demangledName
+        }
+        return nil
+    }
 }
+
+@_silgen_name("swift_demangle")
+private
+func _stdlib_demangleImpl(
+    _ mangledName: UnsafePointer<CChar>?,
+    mangledNameLength: UInt,
+    outputBuffer: UnsafeMutablePointer<UInt8>?,
+    outputBufferSize: UnsafeMutablePointer<UInt>?,
+    flags: UInt32
+    ) -> UnsafeMutablePointer<CChar>?
+
