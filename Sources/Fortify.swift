@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 19/09/2017.
 //  Copyright © 2017 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Fortify/Sources/Fortify.swift#8 $
+//  $Id: //depot/Fortify/Sources/Fortify.swift#9 $
 //
 
 import Foundation
@@ -150,11 +150,12 @@ open class Fortify: ThreadLocal {
     public class func stackTrace() -> String {
         var trace = ""
         for var caller in Thread.callStackSymbols {
-            if let offsetStart = caller.lastIndex(of: " "),
-                let symEnd = (offsetStart-2).index(in: caller),
-                let symStart = caller[..<symEnd].lastIndex(of: " "),
-                let demangled = demangle(symbol: caller[symStart+1 ..< symEnd]) {
-                caller[symStart+1 ..< symEnd] = demangled
+            let symbolEnd = caller.lastIndex(of: " ")-2
+            let symbolStart = caller[..<symbolEnd].lastIndex(of: " ")+1
+            let symbolRange = symbolStart ..< symbolEnd
+            if let symbol = caller[safe: symbolRange],
+                let demangled = demangle(symbol: symbol) {
+                caller[symbolRange] = demangled
             }
 
             trace += caller+"\n"
