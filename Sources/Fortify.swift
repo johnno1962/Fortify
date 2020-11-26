@@ -5,20 +5,22 @@
 //  Created by John Holdsworth on 19/09/2017.
 //  Copyright © 2017 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Fortify/Sources/Fortify.swift#9 $
+//  $Id: //depot/Fortify/Sources/Fortify.swift#10 $
 //
 
 import Foundation
 import StringIndex
 
 open class ThreadLocal {
-    public required init() {
-    }
+    static var keyLock = OS_SPINLOCK_INIT
+
+    public required init() {}
 
     public class func getThreadLocal<T: ThreadLocal>(ofClass: T.Type,
                          keyVar: UnsafeMutablePointer<pthread_key_t>) -> T {
-        let needsKey = keyVar.pointee == 0
-        if needsKey {
+        OSSpinLockLock(&keyLock)
+        defer { OSSpinLockUnlock(&keyLock) }
+        if keyVar.pointee == 0 {
             let ret = pthread_key_create(keyVar, {
                 #if os(Linux) || os(Android)
                 Unmanaged<ThreadLocal>.fromOpaque($0!).release()
@@ -27,7 +29,7 @@ open class ThreadLocal {
                 #endif
             })
             if ret != 0 {
-                NSLog("Could not pthread_key_create: %s", strerror(ret))
+                fatalError("Could not pthread_key_create: \(String(cString: strerror(ret)))")
             }
         }
         if let existing = pthread_getspecific(keyVar.pointee) {
@@ -37,7 +39,7 @@ open class ThreadLocal {
             let unmanaged = Unmanaged.passRetained(T())
             let ret = pthread_setspecific(keyVar.pointee, unmanaged.toOpaque())
             if ret != 0 {
-                NSLog("Could not pthread_setspecific: %s", strerror(ret))
+                fatalError("Could not pthread_setspecific: \(String(cString: strerror(ret)))")
             }
             return unmanaged.takeUnretainedValue()
         }
