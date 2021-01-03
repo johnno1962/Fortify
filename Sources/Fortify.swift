@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 19/09/2017.
 //  Copyright © 2017 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Fortify/Sources/Fortify.swift#17 $
+//  $Id: //depot/Fortify/Sources/Fortify.swift#23 $
 //
 
 import Foundation
@@ -17,7 +17,7 @@ public func hook_assertionFailure(
   file: StaticString, line: UInt,
   flags: UInt32
 ) -> Never {
-    Fortify.escape(msg: "\(message), file: \(file), line: \(line)")
+    Fortify.escape(msg: "\(message)", file: file, line: line)
 }
 
 /// Abstract superclass to maintain ThreadLocal instances.
@@ -26,11 +26,11 @@ open class ThreadLocal {
 
     public required init() {}
 
-    class var threadKeyPointer: UnsafeMutablePointer<pthread_key_t> {
+    open class var threadKeyPointer: UnsafeMutablePointer<pthread_key_t> {
         fatalError("Subclass responsibility to provide threadKey var")
     }
 
-    class var threadLocal: Self {
+    public class var threadLocal: Self {
         let keyVar = threadKeyPointer
         OSSpinLockLock(&keyLock)
         if keyVar.pointee == 0 {
@@ -72,7 +72,7 @@ open class Fortify: ThreadLocal {
 
     static private var pthreadKey: pthread_key_t = 0
 
-    override class var threadKeyPointer: UnsafeMutablePointer<pthread_key_t> {
+    open override class var threadKeyPointer: UnsafeMutablePointer<pthread_key_t> {
         return UnsafeMutablePointer(&pthreadKey)
     }
 
@@ -80,7 +80,7 @@ open class Fortify: ThreadLocal {
     public var error: Error?
 
     // Required as Swift assumes it has control of the stack
-    static var disableExclusivityChecking: () = {
+    static let disableExclusivityChecking: () = {
         #if os(Android)
         let libName = "libswiftCore.so"
         #else
@@ -95,32 +95,29 @@ open class Fortify: ThreadLocal {
         }
     }()
 
-    public static let installHandlersOnce: Void = {
-        // Force unwrap of nil etc.
-        _ = signal(SIGILL, { (signo: Int32) in
-            escape(msg: "Signal \(signo)")
-        })
-        // Bad cast
-        _ = signal(SIGABRT, { (signo: Int32) in
-            escape(msg: "Signal \(signo)")
-        })
-        // Bad cast macOS 11
-        _ = signal(SIGTRAP, { (signo: Int32) in
-            escape(msg: "Signal \(signo)")
-        })
+    public static var signalsTrapped = [
+        SIGILL: "SIGILL", SIGABRT: "SIGABRT", SIGTRAP: "SIGTRAP"]
 
-        _ = disableExclusivityChecking
+    public static let installHandlersOnce: () = {
+        // Force unwrap of nil, bad cast etc.
+        // macOS 11 abort() seems to send SIGTRAP
+        for (signo, sigtxt) in signalsTrapped {
+            _ = signal(signo, { (signo: Int32) in
+                escape(msg: "Signal \(signalsTrapped[signo] ?? "#\(signo)")")
+            })
+        }
 
-        // For Swift 5.3+, hook _assertionFailure
+        // For Swift 5.3+, also hook _assertionFailure which gives file and line
         let failure = "_assertionFailure__4file4line5flagss5NeverOs12StaticStringV_A2"
         let RTLD_DEFAULT = UnsafeMutableRawPointer(bitPattern: -2)
         if let fake = dlsym(RTLD_DEFAULT, "$s7Fortify21hook"+failure+"ISus6UInt32VtF") {
-            var rebindings = [rebinding]()
-            rebindings.append(rebinding(name: strdup("$ss17"+failure+"HSus6UInt32VtF"),
-                replacement: fake, replaced: nil))
-
+            var rebindings = [rebinding(name: strdup("$ss17"+failure+"HSus6UInt32VtF"),
+                                        replacement: fake, replaced: nil)]
             rebind_symbols(&rebindings, rebindings.count)
+            free(UnsafeMutablePointer(mutating: rebindings[0].name))
         }
+
+        _ = disableExclusivityChecking
     }()
 
     /// Execute the passed-in block assured in the knowledge
@@ -153,11 +150,10 @@ open class Fortify: ThreadLocal {
     /// - Parameters:
     ///   - msg: A short message describing the error.
     open class func escape(msg: String, file: StaticString = #file, line: UInt = #line) -> Never {
-        let trace = "Program has trapped: \(msg), stack trace follows:\n\(stackTrace())"
+        let trace = "Program has trapped: \(msg) file: \(file), line: \(line)\nStack trace follows:\n\(stackTrace())"
         NSLog(trace)
         escape(withError: NSError(domain: "Fortify", code: -1, userInfo: [
-            NSLocalizedDescriptionKey: trace,
-            "msg": msg, "file": file, "line": line
+            NSLocalizedDescriptionKey: trace, "file": file, "line": line
         ]))
     }
 
@@ -187,7 +183,7 @@ open class Fortify: ThreadLocal {
         }
 
         longjump(&local.stack[local.stack.count-1], 1)
-        NSLog("longjmp() failed, should not get here")
+        // control resumes at set_jump call returning 1
     }
 
     public class func stackTrace() -> String {
