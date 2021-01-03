@@ -5,11 +5,20 @@
 //  Created by John Holdsworth on 19/09/2017.
 //  Copyright © 2017 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Fortify/Sources/Fortify.swift#11 $
+//  $Id: //depot/Fortify/Sources/Fortify.swift#17 $
 //
 
 import Foundation
 import StringIndex
+import fishhook
+
+public func hook_assertionFailure(
+  _ prefix: StaticString, _ message: StaticString,
+  file: StaticString, line: UInt,
+  flags: UInt32
+) -> Never {
+    Fortify.escape(msg: "\(message), file: \(file), line: \(line)")
+}
 
 /// Abstract superclass to maintain ThreadLocal instances.
 open class ThreadLocal {
@@ -95,16 +104,31 @@ open class Fortify: ThreadLocal {
         _ = signal(SIGABRT, { (signo: Int32) in
             escape(msg: "Signal \(signo)")
         })
+        // Bad cast macOS 11
+        _ = signal(SIGTRAP, { (signo: Int32) in
+            escape(msg: "Signal \(signo)")
+        })
 
         _ = disableExclusivityChecking
+
+        // For Swift 5.3+, hook _assertionFailure
+        let failure = "_assertionFailure__4file4line5flagss5NeverOs12StaticStringV_A2"
+        let RTLD_DEFAULT = UnsafeMutableRawPointer(bitPattern: -2)
+        if let fake = dlsym(RTLD_DEFAULT, "$s7Fortify21hook"+failure+"ISus6UInt32VtF") {
+            var rebindings = [rebinding]()
+            rebindings.append(rebinding(name: strdup("$ss17"+failure+"HSus6UInt32VtF"),
+                replacement: fake, replaced: nil))
+
+            rebind_symbols(&rebindings, rebindings.count)
+        }
     }()
 
     /// Execute the passed-in block assured in the knowledge
     /// any Swift exception will be converted into a throw.
     /// - Parameter block: block to protect execution of
     /// - Throws: Error protocol object often NSError
-    /// - Returns: value if block return value
-    open class func exec<T>(block: () throws -> T) throws -> T {
+    /// - Returns: value if block returns value
+    open class func protect<T>(block: () throws -> T) throws -> T {
         let local = threadLocal
         _ = installHandlersOnce
 
@@ -125,7 +149,7 @@ open class Fortify: ThreadLocal {
     }
 
     /// Escape from current execution context, rewind the stack
-    /// and throw error from the last time exec was called.
+    /// and throw error from the last time protect was called.
     /// - Parameters:
     ///   - msg: A short message describing the error.
     open class func escape(msg: String, file: StaticString = #file, line: UInt = #line) -> Never {
@@ -138,14 +162,14 @@ open class Fortify: ThreadLocal {
     }
 
     /// Escape from current execution context, rewind the stack
-    /// and throw error from the last time exec was called.
+    /// and throw error from the last time protect was called.
     /// - Parameter error: object conforming to Error.
     open class func escape(withError error: Error) -> Never {
         let local = threadLocal
         local.error = error
 
         if local.stack.count == 0 {
-            NSLog("escape without matching exec call: \(error)")
+            NSLog("escape without matching protect call: \(error)")
             #if !os(Android)
             // pthread_exit(nil) just crashes
             var oldState: Int32 = 0

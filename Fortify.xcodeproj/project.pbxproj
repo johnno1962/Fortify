@@ -10,6 +10,7 @@
 		BB1C324B254C19FD001EDFCC /* StringIndex in Frameworks */ = {isa = PBXBuildFile; productRef = BB1C324A254C19FD001EDFCC /* StringIndex */; };
 		BB9B0C99209218760037C6B8 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB9B0C98209218760037C6B8 /* main.swift */; };
 		BB9B0CA0209218870037C6B8 /* Fortify.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "Fortify::Fortify::Product" /* Fortify.framework */; };
+		BBB23CA925A1D59F00BD1D67 /* fishhook in Frameworks */ = {isa = PBXBuildFile; productRef = BBB23CA825A1D59F00BD1D67 /* fishhook */; };
 		OBJ_17 /* Fortify.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_8 /* Fortify.swift */; };
 		OBJ_24 /* Package.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_6 /* Package.swift */; };
 /* End PBXBuildFile section */
@@ -59,6 +60,7 @@
 			buildActionMask = 0;
 			files = (
 				BB1C324B254C19FD001EDFCC /* StringIndex in Frameworks */,
+				BBB23CA925A1D59F00BD1D67 /* fishhook in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -127,7 +129,6 @@
 				BB9B0C92209218760037C6B8 /* Sources */,
 				BB9B0C93209218760037C6B8 /* Frameworks */,
 				BB9B0C94209218760037C6B8 /* CopyFiles */,
-				BB9B0CA120921AD20037C6B8 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -135,6 +136,8 @@
 				BB9B0C9E209218800037C6B8 /* PBXTargetDependency */,
 			);
 			name = fortifyapp;
+			packageProductDependencies = (
+			);
 			productName = fortifyapp;
 			productReference = BB9B0C96209218760037C6B8 /* fortifyapp */;
 			productType = "com.apple.product-type.tool";
@@ -143,16 +146,19 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = OBJ_13 /* Build configuration list for PBXNativeTarget "Fortify" */;
 			buildPhases = (
+				BBB23CAE25A1DF5000BD1D67 /* ShellScript */,
 				OBJ_16 /* Sources */,
 				OBJ_18 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				BBB23CAD25A1DEDE00BD1D67 /* PBXTargetDependency */,
 			);
 			name = Fortify;
 			packageProductDependencies = (
 				BB1C324A254C19FD001EDFCC /* StringIndex */,
+				BBB23CA825A1D59F00BD1D67 /* fishhook */,
 			);
 			productName = Fortify;
 			productReference = "Fortify::Fortify::Product" /* Fortify.framework */;
@@ -198,6 +204,7 @@
 			mainGroup = OBJ_5;
 			packageReferences = (
 				BB1C3249254C19FC001EDFCC /* XCRemoteSwiftPackageReference "StringIndex" */,
+				BBB23CA725A1D59F00BD1D67 /* XCRemoteSwiftPackageReference "fishhook" */,
 			);
 			productRefGroup = OBJ_10 /* Products */;
 			projectDirPath = "";
@@ -209,22 +216,6 @@
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		BB9B0CA120921AD20037C6B8 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "";
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		BB9B0C92209218760037C6B8 /* Sources */ = {
@@ -258,6 +249,10 @@
 			isa = PBXTargetDependency;
 			target = "Fortify::Fortify" /* Fortify */;
 			targetProxy = BB9B0C9D209218800037C6B8 /* PBXContainerItemProxy */;
+		};
+		BBB23CAD25A1DEDE00BD1D67 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = BBB23CAC25A1DEDE00BD1D67 /* fishhook */;
 		};
 /* End PBXTargetDependency section */
 
@@ -534,6 +529,14 @@
 				minimumVersion = 2.0.0;
 			};
 		};
+		BBB23CA725A1D59F00BD1D67 /* XCRemoteSwiftPackageReference "fishhook" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/johnno1962/fishhook";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.1;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -541,6 +544,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = BB1C3249254C19FC001EDFCC /* XCRemoteSwiftPackageReference "StringIndex" */;
 			productName = StringIndex;
+		};
+		BBB23CA825A1D59F00BD1D67 /* fishhook */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BBB23CA725A1D59F00BD1D67 /* XCRemoteSwiftPackageReference "fishhook" */;
+			productName = fishhook;
+		};
+		BBB23CAC25A1DEDE00BD1D67 /* fishhook */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BBB23CA725A1D59F00BD1D67 /* XCRemoteSwiftPackageReference "fishhook" */;
+			productName = fishhook;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

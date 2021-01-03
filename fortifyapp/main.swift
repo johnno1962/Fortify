@@ -9,7 +9,7 @@ import Foundation
 import Fortify
 
 do {
-    try Fortify.exec {
+    try Fortify.protect {
         var a: String!
         a = a!
     }
@@ -29,7 +29,7 @@ func g( h: () -> Void ) {
 }
 
 do {
-    try Fortify.exec {
+    try Fortify.protect {
         g( h: {
             class B{}
             class C{
@@ -46,7 +46,7 @@ catch {
 }
 
 do {
-    try Fortify.exec {
+    try Fortify.protect {
         var a: String?
         NSLog(a!)
     }
@@ -56,7 +56,7 @@ catch {
 }
 
 do {
-    try Fortify.exec {
+    try Fortify.protect {
         var a: String?
         NSLog(a!)
     }
@@ -66,7 +66,7 @@ catch {
 }
 
 do {
-    try Fortify.exec {
+    try Fortify.protect {
         class B{}
         class C{}
         var d = B() as! C
@@ -77,7 +77,7 @@ catch {
 }
 
 do {
-    try Fortify.exec {
+    try Fortify.protect {
         class B{}
         class C{}
         var d = B() as! C
