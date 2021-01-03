@@ -531,7 +531,7 @@
 			repositoryURL = "https://github.com/johnno1962/StringIndex";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 1.4.1;
+				minimumVersion = 2.0.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

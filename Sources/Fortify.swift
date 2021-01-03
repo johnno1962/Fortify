@@ -5,21 +5,25 @@
 //  Created by John Holdsworth on 19/09/2017.
 //  Copyright © 2017 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Fortify/Sources/Fortify.swift#10 $
+//  $Id: //depot/Fortify/Sources/Fortify.swift#11 $
 //
 
 import Foundation
 import StringIndex
 
+/// Abstract superclass to maintain ThreadLocal instances.
 open class ThreadLocal {
     static var keyLock = OS_SPINLOCK_INIT
 
     public required init() {}
 
-    public class func getThreadLocal<T: ThreadLocal>(ofClass: T.Type,
-                         keyVar: UnsafeMutablePointer<pthread_key_t>) -> T {
+    class var threadKeyPointer: UnsafeMutablePointer<pthread_key_t> {
+        fatalError("Subclass responsibility to provide threadKey var")
+    }
+
+    class var threadLocal: Self {
+        let keyVar = threadKeyPointer
         OSSpinLockLock(&keyLock)
-        defer { OSSpinLockUnlock(&keyLock) }
         if keyVar.pointee == 0 {
             let ret = pthread_key_create(keyVar, {
                 #if os(Linux) || os(Android)
@@ -32,11 +36,12 @@ open class ThreadLocal {
                 fatalError("Could not pthread_key_create: \(String(cString: strerror(ret)))")
             }
         }
+        OSSpinLockUnlock(&keyLock)
         if let existing = pthread_getspecific(keyVar.pointee) {
-            return Unmanaged<T>.fromOpaque(existing).takeUnretainedValue()
+            return Unmanaged<Self>.fromOpaque(existing).takeUnretainedValue()
         }
         else {
-            let unmanaged = Unmanaged.passRetained(T())
+            let unmanaged = Unmanaged.passRetained(Self())
             let ret = pthread_setspecific(keyVar.pointee, unmanaged.toOpaque())
             if ret != 0 {
                 fatalError("Could not pthread_setspecific: \(String(cString: strerror(ret)))")
@@ -47,10 +52,10 @@ open class ThreadLocal {
 }
 
 @_silgen_name ("setjmp")
-public func setjump(_: UnsafeMutablePointer<jmp_buf>!) -> Int32
+public func setjump(_: UnsafeMutablePointer<jmp_buf>) -> Int32
 
 @_silgen_name ("longjmp")
-public func longjump(_: UnsafeMutablePointer<jmp_buf>!, _: Int32) -> Never
+public func longjump(_: UnsafeMutablePointer<jmp_buf>, _: Int32) -> Never
 
 private let empty_buf = [UInt8](repeating: 0, count: MemoryLayout<jmp_buf>.size)
 
@@ -58,15 +63,15 @@ open class Fortify: ThreadLocal {
 
     static private var pthreadKey: pthread_key_t = 0
 
-    open class var threadLocal: Fortify {
-        return getThreadLocal(ofClass: Fortify.self, keyVar: &pthreadKey)
+    override class var threadKeyPointer: UnsafeMutablePointer<pthread_key_t> {
+        return UnsafeMutablePointer(&pthreadKey)
     }
 
     private var stack = [jmp_buf]()
     public var error: Error?
 
     // Required as Swift assumes it has control of the stack
-    open class func disableExclusivityChecking() {
+    static var disableExclusivityChecking: () = {
         #if os(Android)
         let libName = "libswiftCore.so"
         #else
@@ -79,22 +84,29 @@ open class Fortify: ThreadLocal {
         else {
             NSLog("Could not disable exclusivity, failure likely...")
         }
-    }
-
-    public static let installHandlerOnce: Void = {
-        _ = signal(SIGILL, { (signo: Int32) in
-            Fortify.escape(msg: "Signal \(signo)")
-        })
-        _ = signal(SIGABRT, { (signo: Int32) in
-            Fortify.escape(msg: "Signal \(signo)")
-        })
-
-        disableExclusivityChecking()
     }()
 
-    open class func exec<T>( block: () throws -> T ) throws -> T {
-        _ = installHandlerOnce
+    public static let installHandlersOnce: Void = {
+        // Force unwrap of nil etc.
+        _ = signal(SIGILL, { (signo: Int32) in
+            escape(msg: "Signal \(signo)")
+        })
+        // Bad cast
+        _ = signal(SIGABRT, { (signo: Int32) in
+            escape(msg: "Signal \(signo)")
+        })
+
+        _ = disableExclusivityChecking
+    }()
+
+    /// Execute the passed-in block assured in the knowledge
+    /// any Swift exception will be converted into a throw.
+    /// - Parameter block: block to protect execution of
+    /// - Throws: Error protocol object often NSError
+    /// - Returns: value if block return value
+    open class func exec<T>(block: () throws -> T) throws -> T {
         let local = threadLocal
+        _ = installHandlersOnce
 
         empty_buf.withUnsafeBytes {
             let buf_ptr = $0.baseAddress!.assumingMemoryBound(to: jmp_buf.self)
@@ -105,14 +117,17 @@ open class Fortify: ThreadLocal {
             local.stack.removeLast()
         }
 
-        let stack = local.stack.withUnsafeMutableBufferPointer { $0.baseAddress }
-        if setjump(stack! + (local.stack.count-1)) != 0 {
+        if setjump(&local.stack[local.stack.count-1]) != 0 {
             throw local.error ?? NSError(domain: "Error not available", code: -1, userInfo: nil)
         }
 
         return try block()
     }
 
+    /// Escape from current execution context, rewind the stack
+    /// and throw error from the last time exec was called.
+    /// - Parameters:
+    ///   - msg: A short message describing the error.
     open class func escape(msg: String, file: StaticString = #file, line: UInt = #line) -> Never {
         let trace = "Program has trapped: \(msg), stack trace follows:\n\(stackTrace())"
         NSLog(trace)
@@ -122,6 +137,9 @@ open class Fortify: ThreadLocal {
         ]))
     }
 
+    /// Escape from current execution context, rewind the stack
+    /// and throw error from the last time exec was called.
+    /// - Parameter error: object conforming to Error.
     open class func escape(withError error: Error) -> Never {
         let local = threadLocal
         local.error = error
@@ -144,16 +162,15 @@ open class Fortify: ThreadLocal {
             Thread.sleep(until: Date.distantFuture)
         }
 
-        let stack = local.stack.withUnsafeMutableBufferPointer { $0.baseAddress }
-        longjump(stack! + (local.stack.count-1), 1)
+        longjump(&local.stack[local.stack.count-1], 1)
         NSLog("longjmp() failed, should not get here")
     }
 
     public class func stackTrace() -> String {
         var trace = ""
         for var caller in Thread.callStackSymbols {
-            let symbolEnd = caller.lastIndex(of: " ")-2
-            let symbolStart = caller[..<symbolEnd].lastIndex(of: " ")+1
+            let symbolEnd = .last(of: " ") - 2
+            let symbolStart = symbolEnd + .last(of: " ") + 1
             let symbolRange = symbolStart ..< symbolEnd
             if let symbol = caller[safe: symbolRange],
                 let demangled = demangle(symbol: symbol) {

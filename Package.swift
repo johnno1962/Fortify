@@ -15,7 +15,7 @@ let package = Package(
             targets: [name]),
     ],
     dependencies: [
-        .package(url: "https://github.com/johnno1962/StringIndex", .upToNextMajor(from: "1.3.1")),
+        .package(url: "https://github.com/johnno1962/StringIndex", .upToNextMajor(from: "2.0.0")),
     ],
     targets: [
         .target(
