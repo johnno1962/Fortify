@@ -4,7 +4,7 @@
 import PackageDescription
 import Foundation
 
-let name = URL(fileURLWithPath: #file)
+let name = URL(fileURLWithPath: #filePath)
     .deletingLastPathComponent().lastPathComponent
 
 let package = Package(
@@ -16,12 +16,16 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/johnno1962/StringIndex", .upToNextMajor(from: "2.0.1")),
-        .package(url: "https://github.com/johnno1962/fishhook", .upToNextMajor(from: "1.0.1")),
+        .package(url: "https://github.com/johnno1962/DLKit", .upToNextMajor(from: "3.2.0")),
     ],
     targets: [
         .target(
             name: name,
-            dependencies: ["StringIndex", "fishhook"],
-            path: "Sources/")
+            dependencies: ["StringIndex", "DLKit",
+                           .product(name: "DLKitC", package: "DLKit")],
+            path: "Sources/"),
+        .testTarget(
+            name: "FortifyTests",
+            dependencies: ["Fortify"]),
     ]
 )

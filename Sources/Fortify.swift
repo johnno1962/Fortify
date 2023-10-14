@@ -5,19 +5,27 @@
 //  Created by John Holdsworth on 19/09/2017.
 //  Copyright © 2017 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Fortify/Sources/Fortify.swift#23 $
+//  $Id: //depot/Fortify/Sources/Fortify.swift#25 $
 //
 
 import Foundation
 import StringIndex
-import fishhook
+import DLKit
 
-public func hook_assertionFailure(
+internal func hook_assertionFailure(
   _ prefix: StaticString, _ message: StaticString,
   file: StaticString, line: UInt,
   flags: UInt32
 ) -> Never {
     Fortify.escape(msg: "\(message)", file: file, line: line)
+}
+
+internal func hook_assertionFailure(
+  _ prefix: StaticString, _ message: String,
+  file: StaticString, line: UInt,
+  flags: UInt32
+) -> Never {
+    Fortify.escape(msg: message, file: file, line: line)
 }
 
 /// Abstract superclass to maintain ThreadLocal instances.
@@ -72,7 +80,7 @@ open class Fortify: ThreadLocal {
 
     static private var pthreadKey: pthread_key_t = 0
 
-    open override class var threadKeyPointer: UnsafeMutablePointer<pthread_key_t> {
+    override open class var threadKeyPointer: UnsafeMutablePointer<pthread_key_t> {
         return UnsafeMutablePointer(&pthreadKey)
     }
 
@@ -96,9 +104,12 @@ open class Fortify: ThreadLocal {
     }()
 
     public static var signalsTrapped = [
-        SIGILL: "SIGILL", SIGABRT: "SIGABRT", SIGTRAP: "SIGTRAP"]
+        SIGILL: "SIGILL", // Force unwrap of nil etc.
+        SIGABRT: "SIGABRT", // Bad cast 5.2
+        SIGTRAP: "SIGTRAP", // Bad cast macOS 11
+    ]
 
-    public static let installHandlersOnce: () = {
+    public static let installHandlersOnce: Void = {
         // Force unwrap of nil, bad cast etc.
         // macOS 11 abort() seems to send SIGTRAP
         for (signo, sigtxt) in signalsTrapped {
@@ -107,14 +118,14 @@ open class Fortify: ThreadLocal {
             })
         }
 
-        // For Swift 5.3+, also hook _assertionFailure which gives file and line
-        let failure = "_assertionFailure__4file4line5flagss5NeverOs12StaticStringV_A2"
-        let RTLD_DEFAULT = UnsafeMutableRawPointer(bitPattern: -2)
-        if let fake = dlsym(RTLD_DEFAULT, "$s7Fortify21hook"+failure+"ISus6UInt32VtF") {
-            var rebindings = [rebinding(name: strdup("$ss17"+failure+"HSus6UInt32VtF"),
-                                        replacement: fake, replaced: nil)]
-            rebind_symbols(&rebindings, rebindings.count)
-            free(UnsafeMutablePointer(mutating: rebindings[0].name))
+        // For Swift 5.3+, hook _assertionFailures
+        if DLKit.appImages.rebind(mapping: [
+            "$ss17_assertionFailure__4file4line5flagss5NeverOs12StaticStringV_A2HSus6UInt32VtF":
+            "$s7Fortify21hook_assertionFailure__4file4line5flagss5NeverOs12StaticStringV_A2ISus6UInt32VtF",
+            "$ss17_assertionFailure__4file4line5flagss5NeverOs12StaticStringV_SSAHSus6UInt32VtF":
+             "$s7Fortify21hook_assertionFailure__4file4line5flagss5NeverOs12StaticStringV_SSAISus6UInt32VtF"
+        ]).count == 0 {
+            NSLog("⚠️ Unable to hook _assertionFailure")
         }
 
         _ = disableExclusivityChecking
@@ -165,7 +176,7 @@ open class Fortify: ThreadLocal {
         local.error = error
 
         if local.stack.count == 0 {
-            NSLog("escape without matching protect call: \(error)")
+            NSLog("Fortify.escape called without matching protect call: \(error)")
             #if !os(Android)
             // pthread_exit(nil) just crashes
             var oldState: Int32 = 0

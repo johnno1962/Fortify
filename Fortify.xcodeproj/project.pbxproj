@@ -8,9 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		BB1C324B254C19FD001EDFCC /* StringIndex in Frameworks */ = {isa = PBXBuildFile; productRef = BB1C324A254C19FD001EDFCC /* StringIndex */; };
+		BB5425F22ADAC84A00780BD1 /* DLKit in Frameworks */ = {isa = PBXBuildFile; productRef = BB5425F12ADAC84A00780BD1 /* DLKit */; };
+		BB5425F42ADAC84A00780BD1 /* DLKitC in Frameworks */ = {isa = PBXBuildFile; productRef = BB5425F32ADAC84A00780BD1 /* DLKitC */; };
 		BB9B0C99209218760037C6B8 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB9B0C98209218760037C6B8 /* main.swift */; };
 		BB9B0CA0209218870037C6B8 /* Fortify.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "Fortify::Fortify::Product" /* Fortify.framework */; };
-		BBB23CA925A1D59F00BD1D67 /* fishhook in Frameworks */ = {isa = PBXBuildFile; productRef = BBB23CA825A1D59F00BD1D67 /* fishhook */; };
 		OBJ_17 /* Fortify.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_8 /* Fortify.swift */; };
 		OBJ_24 /* Package.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_6 /* Package.swift */; };
 /* End PBXBuildFile section */
@@ -60,7 +61,8 @@
 			buildActionMask = 0;
 			files = (
 				BB1C324B254C19FD001EDFCC /* StringIndex in Frameworks */,
-				BBB23CA925A1D59F00BD1D67 /* fishhook in Frameworks */,
+				BB5425F22ADAC84A00780BD1 /* DLKit in Frameworks */,
+				BB5425F42ADAC84A00780BD1 /* DLKitC in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -146,7 +148,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = OBJ_13 /* Build configuration list for PBXNativeTarget "Fortify" */;
 			buildPhases = (
-				BBB23CAE25A1DF5000BD1D67 /* ShellScript */,
 				OBJ_16 /* Sources */,
 				OBJ_18 /* Frameworks */,
 			);
@@ -158,7 +159,8 @@
 			name = Fortify;
 			packageProductDependencies = (
 				BB1C324A254C19FD001EDFCC /* StringIndex */,
-				BBB23CA825A1D59F00BD1D67 /* fishhook */,
+				BB5425F12ADAC84A00780BD1 /* DLKit */,
+				BB5425F32ADAC84A00780BD1 /* DLKitC */,
 			);
 			productName = Fortify;
 			productReference = "Fortify::Fortify::Product" /* Fortify.framework */;
@@ -204,7 +206,7 @@
 			mainGroup = OBJ_5;
 			packageReferences = (
 				BB1C3249254C19FC001EDFCC /* XCRemoteSwiftPackageReference "StringIndex" */,
-				BBB23CA725A1D59F00BD1D67 /* XCRemoteSwiftPackageReference "fishhook" */,
+				BB5425F02ADAC84A00780BD1 /* XCRemoteSwiftPackageReference "DLKit" */,
 			);
 			productRefGroup = OBJ_10 /* Products */;
 			projectDirPath = "";
@@ -307,7 +309,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				LD_RUNPATH_SEARCH_PATHS = "$(TARGET_BUILD_DIR)";
-				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -361,7 +363,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				LD_RUNPATH_SEARCH_PATHS = "$(TARGET_BUILD_DIR)";
-				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -444,7 +446,7 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_NS_ASSERTIONS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_SWIFT_FLAGS = "-DXcode";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -466,7 +468,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				GCC_OPTIMIZATION_LEVEL = s;
-				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				OTHER_SWIFT_FLAGS = "-DXcode";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
@@ -526,7 +528,15 @@
 			repositoryURL = "https://github.com/johnno1962/StringIndex";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 2.0.0;
+				minimumVersion = 2.1.1;
+			};
+		};
+		BB5425F02ADAC84A00780BD1 /* XCRemoteSwiftPackageReference "DLKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/johnno1962/DLKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.2.0;
 			};
 		};
 		BBB23CA725A1D59F00BD1D67 /* XCRemoteSwiftPackageReference "fishhook" */ = {
@@ -545,10 +555,15 @@
 			package = BB1C3249254C19FC001EDFCC /* XCRemoteSwiftPackageReference "StringIndex" */;
 			productName = StringIndex;
 		};
-		BBB23CA825A1D59F00BD1D67 /* fishhook */ = {
+		BB5425F12ADAC84A00780BD1 /* DLKit */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = BBB23CA725A1D59F00BD1D67 /* XCRemoteSwiftPackageReference "fishhook" */;
-			productName = fishhook;
+			package = BB5425F02ADAC84A00780BD1 /* XCRemoteSwiftPackageReference "DLKit" */;
+			productName = DLKit;
+		};
+		BB5425F32ADAC84A00780BD1 /* DLKitC */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BB5425F02ADAC84A00780BD1 /* XCRemoteSwiftPackageReference "DLKit" */;
+			productName = DLKitC;
 		};
 		BBB23CAC25A1DEDE00BD1D67 /* fishhook */ = {
 			isa = XCSwiftPackageProductDependency;
