@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 19/09/2017.
 //  Copyright © 2017 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Fortify/Sources/Fortify.swift#25 $
+//  $Id: //depot/Fortify/Sources/Fortify.swift#26 $
 //
 
 import Foundation
@@ -30,7 +30,9 @@ internal func hook_assertionFailure(
 
 /// Abstract superclass to maintain ThreadLocal instances.
 open class ThreadLocal {
+    #if !os(Linux)
     static var keyLock = OS_SPINLOCK_INIT
+    #endif
 
     public required init() {}
 
@@ -40,7 +42,9 @@ open class ThreadLocal {
 
     public class var threadLocal: Self {
         let keyVar = threadKeyPointer
+        #if !os(Linux)
         OSSpinLockLock(&keyLock)
+        #endif
         if keyVar.pointee == 0 {
             let ret = pthread_key_create(keyVar, {
                 #if os(Linux) || os(Android)
@@ -53,7 +57,9 @@ open class ThreadLocal {
                 fatalError("Could not pthread_key_create: \(String(cString: strerror(ret)))")
             }
         }
+        #if !os(Linux)
         OSSpinLockUnlock(&keyLock)
+        #endif
         if let existing = pthread_getspecific(keyVar.pointee) {
             return Unmanaged<Self>.fromOpaque(existing).takeUnretainedValue()
         }
@@ -118,6 +124,7 @@ open class Fortify: ThreadLocal {
             })
         }
 
+        #if !os(Linux)
         // For Swift 5.3+, hook _assertionFailures
         if DLKit.appImages.rebind(mapping: [
             "$ss17_assertionFailure__4file4line5flagss5NeverOs12StaticStringV_A2HSus6UInt32VtF":
@@ -127,6 +134,7 @@ open class Fortify: ThreadLocal {
         ]).count == 0 {
             NSLog("⚠️ Unable to hook _assertionFailure")
         }
+        #endif
 
         _ = disableExclusivityChecking
     }()

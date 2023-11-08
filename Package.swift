@@ -16,7 +16,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/johnno1962/StringIndex", .upToNextMajor(from: "2.0.1")),
-        .package(url: "https://github.com/johnno1962/DLKit", .upToNextMajor(from: "3.2.0")),
+        .package(url: "https://github.com/johnno1962/DLKit", .upToNextMajor(from: "3.2.3")),
     ],
     targets: [
         .target(
