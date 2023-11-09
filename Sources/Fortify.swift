@@ -5,11 +5,13 @@
 //  Created by John Holdsworth on 19/09/2017.
 //  Copyright © 2017 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Fortify/Sources/Fortify.swift#26 $
+//  $Id: //depot/Fortify/Sources/Fortify.swift#27 $
 //
 
 import Foundation
 import StringIndex
+import SwiftRegex
+import Popen
 import DLKit
 
 internal func hook_assertionFailure(
@@ -207,7 +209,23 @@ open class Fortify: ThreadLocal {
 
     public class func stackTrace() -> String {
         var trace = ""
+        #if os(Linux)
+        var syms = [String: [(offset: Int, mangled: String)]]()
+        func loadSyms(path: String) -> [(offset: Int, mangled: String)] {
+            if syms.index(forKey: path) == nil {
+                syms[path] = Popen(cmd: "nm \"\(path)\" | sort")?.compactMap {
+                    line -> (offset: Int, mangled: String)? in
+                    guard let (offset, mangled): (String, String) =
+                            line[#"(\w+) T (.*)$"#],
+                          let offset = Int(offset, radix: 16) else { return nil }
+                    return (offset, mangled)
+                }
+            }
+            return syms[path] ?? []
+        }
+        #endif
         for var caller in Thread.callStackSymbols {
+            #if !os(Linux)
             let symbolEnd = .last(of: " ") - 2
             let symbolStart = symbolEnd + .last(of: " ") + 1
             let symbolRange = symbolStart ..< symbolEnd
@@ -215,7 +233,15 @@ open class Fortify: ThreadLocal {
                 let demangled = demangle(symbol: symbol) {
                 caller[symbolRange] = demangled
             }
-
+            #else
+            let patcher = #"([^(]+)\(\+0x([^)]+)\) \[([^\]]+)"#
+            if let (file, offset, _): (String, String, String) =
+                caller[patcher], let off = Int(offset, radix: 16),
+               let sym = loadSyms(path: file).filter({ $0.offset <= off }).last {
+                let swift = demangle(symbol: sym.mangled) ?? sym.mangled
+                caller[patcher] = (file, offset, swift+" + \(off-sym.offset)")
+            }
+            #endif
             trace += caller+"\n"
         }
         return trace
