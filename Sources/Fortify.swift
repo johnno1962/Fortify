@@ -5,13 +5,15 @@
 //  Created by John Holdsworth on 19/09/2017.
 //  Copyright © 2017 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Fortify/Sources/Fortify.swift#27 $
+//  $Id: //depot/Fortify/Sources/Fortify.swift#29 $
 //
 
 import Foundation
 import StringIndex
+#if os(Linux)
 import SwiftRegex
 import Popen
+#endif
 import DLKit
 
 internal func hook_assertionFailure(
@@ -141,6 +143,23 @@ open class Fortify: ThreadLocal {
         _ = disableExclusivityChecking
     }()
 
+    /// Protect a runLoop from crashes (your milage may vary)
+    open class func protect(runLoop: RunLoop,
+                            onError: @escaping (_ err: Error) -> Void) {
+        runLoop.perform {
+            while true {
+                do {
+                    try protect {
+                        runLoop.run()
+                    }
+                }
+                catch {
+                    onError(error)
+                }
+            }
+        }
+    }
+
     /// Execute the passed-in block assured in the knowledge
     /// any Swift exception will be converted into a throw.
     /// - Parameter block: block to protect execution of
@@ -217,8 +236,8 @@ open class Fortify: ThreadLocal {
                     line -> (offset: Int, mangled: String)? in
                     guard let (offset, mangled): (String, String) =
                             line[#"(\w+) T (.*)$"#],
-                          let offset = Int(offset, radix: 16) else { return nil }
-                    return (offset, mangled)
+                          let offsetI = Int(offset, radix: 16) else { return nil }
+                    return (offsetI, mangled)
                 }
             }
             return syms[path] ?? []

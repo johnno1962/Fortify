@@ -10,6 +10,16 @@
 		BB1C324B254C19FD001EDFCC /* StringIndex in Frameworks */ = {isa = PBXBuildFile; productRef = BB1C324A254C19FD001EDFCC /* StringIndex */; };
 		BB5425F22ADAC84A00780BD1 /* DLKit in Frameworks */ = {isa = PBXBuildFile; productRef = BB5425F12ADAC84A00780BD1 /* DLKit */; };
 		BB5425F42ADAC84A00780BD1 /* DLKitC in Frameworks */ = {isa = PBXBuildFile; productRef = BB5425F32ADAC84A00780BD1 /* DLKitC */; };
+		BB91D5AC2B542B0600011214 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB91D5AB2B542B0600011214 /* AppDelegate.swift */; };
+		BB91D5AE2B542B0600011214 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB91D5AD2B542B0600011214 /* SceneDelegate.swift */; };
+		BB91D5B02B542B0600011214 /* MasterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB91D5AF2B542B0600011214 /* MasterViewController.swift */; };
+		BB91D5B22B542B0600011214 /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB91D5B12B542B0600011214 /* DetailViewController.swift */; };
+		BB91D5B52B542B0600011214 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BB91D5B32B542B0600011214 /* Main.storyboard */; };
+		BB91D5B72B542B0800011214 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BB91D5B62B542B0800011214 /* Assets.xcassets */; };
+		BB91D5BA2B542B0800011214 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BB91D5B82B542B0800011214 /* LaunchScreen.storyboard */; };
+		BB91D5CB2B542C9D00011214 /* DLKitC in Frameworks */ = {isa = PBXBuildFile; productRef = BB91D5CA2B542C9D00011214 /* DLKitC */; };
+		BB91D5D32B5435BD00011214 /* fishhook in Frameworks */ = {isa = PBXBuildFile; productRef = BB91D5D22B5435BD00011214 /* fishhook */; };
+		BB91D5D52B54360300011214 /* fishhook in Frameworks */ = {isa = PBXBuildFile; productRef = BB91D5D42B54360300011214 /* fishhook */; };
 		BB9B0C99209218760037C6B8 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB9B0C98209218760037C6B8 /* main.swift */; };
 		BB9B0CA0209218870037C6B8 /* Fortify.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "Fortify::Fortify::Product" /* Fortify.framework */; };
 		OBJ_17 /* Fortify.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_8 /* Fortify.swift */; };
@@ -17,6 +27,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		BB91D5BF2B542B6200011214 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = OBJ_1 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = "Fortify::Fortify";
+			remoteInfo = Fortify;
+		};
 		BB9B0C9D209218800037C6B8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = OBJ_1 /* Project object */;
@@ -39,6 +56,15 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		BB91D5A92B542B0600011214 /* fortifyUIKit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = fortifyUIKit.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BB91D5AB2B542B0600011214 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		BB91D5AD2B542B0600011214 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		BB91D5AF2B542B0600011214 /* MasterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MasterViewController.swift; sourceTree = "<group>"; };
+		BB91D5B12B542B0600011214 /* DetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; };
+		BB91D5B42B542B0600011214 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		BB91D5B62B542B0800011214 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		BB91D5B92B542B0800011214 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		BB91D5BB2B542B0800011214 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BB9B0C96209218760037C6B8 /* fortifyapp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = fortifyapp; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB9B0C98209218760037C6B8 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		BB9B0CA220924C800037C6B8 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -48,6 +74,15 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		BB91D5A62B542B0600011214 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BB91D5CB2B542C9D00011214 /* DLKitC in Frameworks */,
+				BB91D5D52B54360300011214 /* fishhook in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		BB9B0C93209218760037C6B8 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -63,12 +98,28 @@
 				BB1C324B254C19FD001EDFCC /* StringIndex in Frameworks */,
 				BB5425F22ADAC84A00780BD1 /* DLKit in Frameworks */,
 				BB5425F42ADAC84A00780BD1 /* DLKitC in Frameworks */,
+				BB91D5D32B5435BD00011214 /* fishhook in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		BB91D5AA2B542B0600011214 /* fortifyUIKit */ = {
+			isa = PBXGroup;
+			children = (
+				BB91D5AB2B542B0600011214 /* AppDelegate.swift */,
+				BB91D5AD2B542B0600011214 /* SceneDelegate.swift */,
+				BB91D5AF2B542B0600011214 /* MasterViewController.swift */,
+				BB91D5B12B542B0600011214 /* DetailViewController.swift */,
+				BB91D5B32B542B0600011214 /* Main.storyboard */,
+				BB91D5B62B542B0800011214 /* Assets.xcassets */,
+				BB91D5B82B542B0800011214 /* LaunchScreen.storyboard */,
+				BB91D5BB2B542B0800011214 /* Info.plist */,
+			);
+			path = fortifyUIKit;
+			sourceTree = "<group>";
+		};
 		BB9B0C97209218760037C6B8 /* fortifyapp */ = {
 			isa = PBXGroup;
 			children = (
@@ -89,6 +140,7 @@
 			children = (
 				"Fortify::Fortify::Product" /* Fortify.framework */,
 				BB9B0C96209218760037C6B8 /* fortifyapp */,
+				BB91D5A92B542B0600011214 /* fortifyUIKit.app */,
 			);
 			name = Products;
 			sourceTree = BUILT_PRODUCTS_DIR;
@@ -101,6 +153,7 @@
 				OBJ_7 /* Sources */,
 				OBJ_9 /* Tests */,
 				BB9B0C97209218760037C6B8 /* fortifyapp */,
+				BB91D5AA2B542B0600011214 /* fortifyUIKit */,
 				OBJ_10 /* Products */,
 				BB9B0C9F209218870037C6B8 /* Frameworks */,
 			);
@@ -124,6 +177,28 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		BB91D5A82B542B0600011214 /* fortifyUIKit */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BB91D5BC2B542B0800011214 /* Build configuration list for PBXNativeTarget "fortifyUIKit" */;
+			buildPhases = (
+				BB91D5A52B542B0600011214 /* Sources */,
+				BB91D5A62B542B0600011214 /* Frameworks */,
+				BB91D5A72B542B0600011214 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				BB91D5C02B542B6200011214 /* PBXTargetDependency */,
+			);
+			name = fortifyUIKit;
+			packageProductDependencies = (
+				BB91D5CA2B542C9D00011214 /* DLKitC */,
+				BB91D5D42B54360300011214 /* fishhook */,
+			);
+			productName = fortifyUIKit;
+			productReference = BB91D5A92B542B0600011214 /* fortifyUIKit.app */;
+			productType = "com.apple.product-type.application";
+		};
 		BB9B0C95209218760037C6B8 /* fortifyapp */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = BB9B0C9C209218760037C6B8 /* Build configuration list for PBXNativeTarget "fortifyapp" */;
@@ -161,6 +236,7 @@
 				BB1C324A254C19FD001EDFCC /* StringIndex */,
 				BB5425F12ADAC84A00780BD1 /* DLKit */,
 				BB5425F32ADAC84A00780BD1 /* DLKitC */,
+				BB91D5D22B5435BD00011214 /* fishhook */,
 			);
 			productName = Fortify;
 			productReference = "Fortify::Fortify::Product" /* Fortify.framework */;
@@ -186,9 +262,12 @@
 		OBJ_1 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 0930;
+				LastSwiftUpdateCheck = 1150;
 				LastUpgradeCheck = 9999;
 				TargetAttributes = {
+					BB91D5A82B542B0600011214 = {
+						CreatedOnToolsVersion = 11.5;
+					};
 					BB9B0C95209218760037C6B8 = {
 						CreatedOnToolsVersion = 9.3;
 						ProvisioningStyle = Manual;
@@ -202,11 +281,13 @@
 			knownRegions = (
 				English,
 				en,
+				Base,
 			);
 			mainGroup = OBJ_5;
 			packageReferences = (
 				BB1C3249254C19FC001EDFCC /* XCRemoteSwiftPackageReference "StringIndex" */,
 				BB5425F02ADAC84A00780BD1 /* XCRemoteSwiftPackageReference "DLKit" */,
+				BB91D5D12B5435BD00011214 /* XCRemoteSwiftPackageReference "fishhook" */,
 			);
 			productRefGroup = OBJ_10 /* Products */;
 			projectDirPath = "";
@@ -215,11 +296,36 @@
 				"Fortify::Fortify" /* Fortify */,
 				"Fortify::SwiftPMPackageDescription" /* FortifyPackageDescription */,
 				BB9B0C95209218760037C6B8 /* fortifyapp */,
+				BB91D5A82B542B0600011214 /* fortifyUIKit */,
 			);
 		};
 /* End PBXProject section */
 
+/* Begin PBXResourcesBuildPhase section */
+		BB91D5A72B542B0600011214 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BB91D5BA2B542B0800011214 /* LaunchScreen.storyboard in Resources */,
+				BB91D5B72B542B0800011214 /* Assets.xcassets in Resources */,
+				BB91D5B52B542B0600011214 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
+		BB91D5A52B542B0600011214 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BB91D5AC2B542B0600011214 /* AppDelegate.swift in Sources */,
+				BB91D5AE2B542B0600011214 /* SceneDelegate.swift in Sources */,
+				BB91D5B02B542B0600011214 /* MasterViewController.swift in Sources */,
+				BB91D5B22B542B0600011214 /* DetailViewController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		BB9B0C92209218760037C6B8 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -247,6 +353,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		BB91D5C02B542B6200011214 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = "Fortify::Fortify" /* Fortify */;
+			targetProxy = BB91D5BF2B542B6200011214 /* PBXContainerItemProxy */;
+		};
 		BB9B0C9E209218800037C6B8 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = "Fortify::Fortify" /* Fortify */;
@@ -258,7 +369,154 @@
 		};
 /* End PBXTargetDependency section */
 
+/* Begin PBXVariantGroup section */
+		BB91D5B32B542B0600011214 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				BB91D5B42B542B0600011214 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		BB91D5B82B542B0800011214 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				BB91D5B92B542B0800011214 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
 /* Begin XCBuildConfiguration section */
+		BB91D5BD2B542B0800011214 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 9V5A8WE85E;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = fortifyUIKit/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.5;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.johnholdsworth.fortifyUIKit;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		BB91D5BE2B542B0800011214 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEVELOPMENT_TEAM = 9V5A8WE85E;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = fortifyUIKit/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.5;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.johnholdsworth.fortifyUIKit;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		BB9B0C9A209218760037C6B8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -380,6 +638,7 @@
 				);
 				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = Fortify.xcodeproj/Fortify_Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.5;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(TOOLCHAIN_DIR)/usr/lib/swift/macosx",
@@ -405,6 +664,7 @@
 				);
 				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = Fortify.xcodeproj/Fortify_Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.5;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(TOOLCHAIN_DIR)/usr/lib/swift/macosx",
@@ -484,6 +744,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		BB91D5BC2B542B0800011214 /* Build configuration list for PBXNativeTarget "fortifyUIKit" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BB91D5BD2B542B0800011214 /* Debug */,
+				BB91D5BE2B542B0800011214 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		BB9B0C9C209218760037C6B8 /* Build configuration list for PBXNativeTarget "fortifyapp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -539,6 +808,14 @@
 				minimumVersion = 3.2.0;
 			};
 		};
+		BB91D5D12B5435BD00011214 /* XCRemoteSwiftPackageReference "fishhook" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/johnno1962/fishhook";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.1.1;
+			};
+		};
 		BBB23CA725A1D59F00BD1D67 /* XCRemoteSwiftPackageReference "fishhook" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/johnno1962/fishhook";
@@ -564,6 +841,21 @@
 			isa = XCSwiftPackageProductDependency;
 			package = BB5425F02ADAC84A00780BD1 /* XCRemoteSwiftPackageReference "DLKit" */;
 			productName = DLKitC;
+		};
+		BB91D5CA2B542C9D00011214 /* DLKitC */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BB5425F02ADAC84A00780BD1 /* XCRemoteSwiftPackageReference "DLKit" */;
+			productName = DLKitC;
+		};
+		BB91D5D22B5435BD00011214 /* fishhook */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BB91D5D12B5435BD00011214 /* XCRemoteSwiftPackageReference "fishhook" */;
+			productName = fishhook;
+		};
+		BB91D5D42B54360300011214 /* fishhook */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BB91D5D12B5435BD00011214 /* XCRemoteSwiftPackageReference "fishhook" */;
+			productName = fishhook;
 		};
 		BBB23CAC25A1DEDE00BD1D67 /* fishhook */ = {
 			isa = XCSwiftPackageProductDependency;
