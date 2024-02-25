@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 19/09/2017.
 //  Copyright © 2017 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Fortify/Sources/Fortify.swift#29 $
+//  $Id: //depot/Fortify/Sources/Fortify.swift#30 $
 //
 
 import Foundation
@@ -117,6 +117,8 @@ open class Fortify: ThreadLocal {
         SIGILL: "SIGILL", // Force unwrap of nil etc.
         SIGABRT: "SIGABRT", // Bad cast 5.2
         SIGTRAP: "SIGTRAP", // Bad cast macOS 11
+        SIGSEGV: "SIGSEGV", // Segmentation violation
+        SIGBUS: "SIGBUS", // Bus error
     ]
 
     public static let installHandlersOnce: Void = {
