@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 19/09/2017.
 //  Copyright © 2017 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Fortify/Sources/Fortify.swift#30 $
+//  $Id: //depot/Fortify/Sources/Fortify.swift#31 $
 //
 
 import Foundation
@@ -16,7 +16,7 @@ import Popen
 #endif
 import DLKit
 
-internal func hook_assertionFailure(
+public func hook_assertionFailure(
   _ prefix: StaticString, _ message: StaticString,
   file: StaticString, line: UInt,
   flags: UInt32
@@ -24,7 +24,7 @@ internal func hook_assertionFailure(
     Fortify.escape(msg: "\(message)", file: file, line: line)
 }
 
-internal func hook_assertionFailure(
+public func hook_assertionFailure(
   _ prefix: StaticString, _ message: String,
   file: StaticString, line: UInt,
   flags: UInt32
