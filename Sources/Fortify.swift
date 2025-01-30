@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 19/09/2017.
 //  Copyright © 2017 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Fortify/Sources/Fortify.swift#31 $
+//  $Id: //depot/Fortify/Sources/Fortify.swift#32 $
 //
 
 import Foundation
@@ -247,7 +247,7 @@ open class Fortify: ThreadLocal {
         #endif
         for var caller in Thread.callStackSymbols {
             #if !os(Linux)
-            let symbolEnd = .last(of: " ") - 2
+            let symbolEnd: String.OffsetIndex = .last(of: " ") - 2
             let symbolStart = symbolEnd + .last(of: " ") + 1
             let symbolRange = symbolStart ..< symbolEnd
             if let symbol = caller[safe: symbolRange],
