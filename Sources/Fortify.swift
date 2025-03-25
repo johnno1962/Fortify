@@ -5,7 +5,7 @@
 //  Created by John Holdsworth on 19/09/2017.
 //  Copyright © 2017 John Holdsworth. All rights reserved.
 //
-//  $Id: //depot/Fortify/Sources/Fortify.swift#32 $
+//  $Id: //depot/Fortify/Sources/Fortify.swift#33 $
 //
 
 import Foundation
@@ -145,6 +145,7 @@ open class Fortify: ThreadLocal {
         _ = disableExclusivityChecking
     }()
 
+    @available(macOS 10.13, *)
     /// Protect a runLoop from crashes (your milage may vary)
     open class func protect(runLoop: RunLoop,
                             onError: @escaping (_ err: Error) -> Void) {

@@ -4,8 +4,7 @@
 import PackageDescription
 import Foundation
 
-let name = URL(fileURLWithPath: #filePath)
-    .deletingLastPathComponent().lastPathComponent
+let name = "Fortify"
 
 let package = Package(
     name: name,
@@ -17,7 +16,7 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/johnno1962/StringIndex",
                  .upToNextMajor(from: "2.0.1")),
-        .package(url: "https://github.com/johnno1962/SwiftRegex5.git",
+        .package(name: "SwiftRegex", url: "https://github.com/johnno1962/SwiftRegex5.git",
                  .upToNextMajor(from: "6.0.1")),
         .package(url: "https://github.com/johnno1962/Popen.git",
                  .upToNextMajor(from: "2.1.1")),
@@ -29,7 +28,7 @@ let package = Package(
             name: name,
             dependencies: ["StringIndex", "DLKit", "Popen",
                            .product(name: "DLKitC", package: "DLKit"),
-                           .product(name: "SwiftRegex", package: "SwiftRegex5")],
+                           "SwiftRegex"],
             path: "Sources/"),
         .testTarget(
             name: "FortifyTests",
