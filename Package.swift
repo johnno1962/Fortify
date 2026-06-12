@@ -15,13 +15,13 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/johnno1962/StringIndex",
-                 .upToNextMajor(from: "2.0.1")),
+                 .upToNextMajor(from: "2.2.4")),
         .package(name: "SwiftRegex", url: "https://github.com/johnno1962/SwiftRegex5.git",
-                 .upToNextMajor(from: "6.0.1")),
+                 .upToNextMajor(from: "6.3.0")),
         .package(url: "https://github.com/johnno1962/Popen.git",
-                 .upToNextMajor(from: "2.1.1")),
+                 .upToNextMajor(from: "2.2.2")),
         .package(url: "https://github.com/johnno1962/DLKit",
-                 .upToNextMajor(from: "3.2.3")),
+                 .upToNextMajor(from: "3.6.0")),
     ],
     targets: [
         .target(
